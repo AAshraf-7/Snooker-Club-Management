@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title> Snooker Club Management | Password Protected</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        /* existing styles (unchanged) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: #f1f5f9;
+            padding: 16px 12px;
+            color: #0f172a;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .club-title {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c2c, #2b5e3b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+        }
+        .finance-stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stat-card {
+            background: #f8fafc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border-left: 3px solid #2c7a4b;
+            min-width: 140px;
+            flex: 1;
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        .stat-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        .settings-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        button {
+            background: #2c7a4b;
+            border: none;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        button:hover { background: #1f5e3a; transform: scale(0.98); }
+        .btn-outline { background: white; border: 1px solid #cbd5e1; color: #1e293b; }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-danger { background: #b91c1c; }
+        .btn-danger:hover { background: #991b1b; }
+        .btn-print { background: #2563eb; }
+        .btn-print:hover { background: #1d4ed8; }
+        .btn-discount { background: #d97706; }
+        .btn-discount:hover { background: #b45309; }
+        .btn-export { background: #0f3b2c; }
+        .btn-edit { background: #6b21a5; }
+        .btn-warning { background: #dc2626; }
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media (min-width: 640px) {
+            .tables-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .tables-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1400px) {
+            .tables-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .table-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .table-header {
+            background: #1e293b;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .table-status {
+            font-size: 0.7rem;
+            background: #334155;
+            padding: 4px 10px;
+            border-radius: 40px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .status-available { background: #2c7a4b; }
+        .status-occupied { background: #d97706; }
+        .table-body { padding: 16px; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .bill-total {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #2c7a4b;
+            margin: 12px 0;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 10px;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            min-height: 40px;
+        }
+        .badge-time {
+            background: #fef9c3;
+            color: #854d0e;
+            padding: 4px 8px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+            padding: 16px;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-content {
+            background: white;
+            max-width: 95%;
+            width: 500px;
+            border-radius: 28px;
+            padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .modal-content h3 { margin-bottom: 16px; font-size: 1.3rem; }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        select, input {
+            padding: 12px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            width: 100%;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+        .food-item-row, .game-edit-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .game-edit-row input {
+            width: 80px;
+            margin: 0;
+        }
+        .discount-type-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        hr { margin: 12px 0; }
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #475569;
+        }
+        /* Password overlay - full screen lock */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: 0.3s ease;
+        }
+        .password-box {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 24px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        }
+        .password-box h2 {
+            margin-bottom: 16px;
+            color: #1e293b;
+            font-size: 1.6rem;
+        }
+        .password-box p {
+            color: #475569;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .password-box input {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .password-box button {
+            width: 100%;
+            background: #2c7a4b;
+            font-size: 1rem;
+            padding: 12px;
+        }
+        .error-msg {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            min-height: 32px;
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .print-receipt-only, .print-receipt-only * { visibility: visible; }
+            .print-receipt-only {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+            }
+        }
+        button, .btn-group button { touch-action: manipulation; }
+        input, select, textarea { font-size: 16px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- Password Protection Overlay -->
+<div id="passwordOverlay" class="password-overlay">
+    <div class="password-box">
+        <h2><i class="fas fa-lock"></i> Secure Access</h2>
+        <p>Enter password to continue</p>
+        <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+        <button id="unlockBtn"><i class="fas fa-key"></i> Unlock</button>
+        <div id="passwordError" class="error-msg"></div>
+    </div>
+</div>
+
+<!-- Main Application Content -->
+<div class="container" id="mainApp">
+    <div class="header">
+        <div class="club-title">
+            <h1><i class="fas fa-cue"></i> Snooker Club Management</h1>
+            <div class="finance-stats" id="financeStats">
+                <div class="stat-card"><div class="stat-label">💰 TODAY'S REVENUE</div><div class="stat-amount" id="todayRevenue">₨ 0.00</div></div>
+                <div class="stat-card"><div class="stat-label">⏱️ PENDING REVENUE</div><div class="stat-amount" id="pendingRevenue">₨ 0.00</div></div>
+            </div>
+        </div>
+        <div class="settings-bar">
+            <button id="manageGamesBtn" class="btn-edit"><i class="fas fa-table-tennis"></i> Games</button>
+            <button id="manageSnacksBtn" class="btn-outline"><i class="fas fa-utensils"></i> Snacks</button>
+            <button id="toggleRevenueBtn" class="btn-outline"><i class="fas fa-eye-slash"></i> Hide</button>
+            <button id="resetRevenueBtn" class="btn-warning"><i class="fas fa-trash-alt"></i> Reset</button>
+            <button id="exportDailyBtn" class="btn-export"><i class="fas fa-file-excel"></i> Daily</button>
+            <button id="exportAllBtn" class="btn-export"><i class="fas fa-database"></i> All</button>
+        </div>
+    </div>
+    <div class="tables-grid" id="tablesGrid"></div>
+    <footer>🎱 Snooker Management | Unique IDs | Abdullah Ashraf</footer>
+</div>
+
+<div id="genericModal" class="modal-overlay"><div class="modal-content" id="modalContentDynamic"></div></div>
+
+<script>
+    // ---------- PASSWORD PROTECTION ----------
+    const CORRECT_PASSWORD = "CodingToBetterMyself";
+    let isUnlocked = false;
+
+    function unlockApp() {
+        const overlay = document.getElementById('passwordOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+        isUnlocked = true;
+        // After unlocking, ensure all data loads and everything works
+        // Data is already loaded via loadFromLocalStorage() later, but we need to ensure it runs
+        // The existing loadFromLocalStorage() will be called after unlock in the init chain
+    }
+
+    function checkPassword() {
+        const input = document.getElementById('passwordInput');
+        const errorDiv = document.getElementById('passwordError');
+        const entered = input ? input.value : "";
+        if (entered === CORRECT_PASSWORD) {
+            errorDiv.innerText = "";
+            unlockApp();
+        } else {
+            errorDiv.innerText = "Incorrect password. Please try again.";
+            input.value = "";
+            input.focus();
+        }
+    }
+
+    // Attach event to unlock button and Enter key
+    document.addEventListener('DOMContentLoaded', function() {
+        const unlockBtn = document.getElementById('unlockBtn');
+        const passInput = document.getElementById('passwordInput');
+        if (unlockBtn) unlockBtn.addEventListener('click', checkPassword);
+        if (passInput) {
+            passInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkPassword();
+            });
+            // focus on input
+            passInput.focus();
+        }
+    });
+
+    // ---------- ORIGINAL MANAGEMENT CODE (unchanged except app is hidden until unlock) ----------
+    let GAMES_CATALOG = [
+        { id: "game1", name: "1 Ball", price: 80, defaultMinutes: 15, extensionChargeable: false },
+        { id: "game2", name: "1 Ball Double", price: 160, defaultMinutes: 15, extensionChargeable: false },
+        { id: "game3", name: "6 Ball", price: 100, defaultMinutes: 20, extensionChargeable: false },
+        { id: "game4", name: "6 Ball Double", price: 200, defaultMinutes: 20, extensionChargeable: false },
+        { id: "game5", name: "10 Ball", price: 130, defaultMinutes: 25, extensionChargeable: false },
+        { id: "game6", name: "10 Ball Double", price: 260, defaultMinutes: 25, extensionChargeable: false },
+        { id: "game7", name: "Full Frame", price: 180, defaultMinutes: 30, extensionChargeable: false },
+        { id: "game8", name: "Full Frame Double", price: 330, defaultMinutes: 30, extensionChargeable: false },
+        { id: "game9", name: "Century", price: 600, defaultMinutes: 60, extensionChargeable: true },
+        { id: "game10", name: "Half Century", price: 300, defaultMinutes: 30, extensionChargeable: false }
+    ];
+    
+    let snacksCatalog = [
+        { id: "s1", name: "Samosa", price: 60 },
+        { id: "s2", name: "Soft Drink", price: 150 },
+        { id: "s3", name: "Softdrink Tin", price: 200 },
+        { id: "s4", name: "Popcorn", price: 250 },
+        { id: "s5", name: "Sandwich", price: 350 },
+        { id: "s6", name: "Chips/Crisp", price: 100 },
+        { id: "s7", name: "Cigarette", price: 250 },
+        { id: "s8", name: "Sheesha", price: 800 },
+        { id: "s9", name: "Tea", price: 120 },
+        { id: "s10", name: "Coffee", price: 200 }
+    ];
+    
+    let activeSessions = new Map();
+    let completedTransactions = [];
+    let receiptCounter = 1;
+    let revenueHidden = false;
+    
+    const tables = [
+        { id: 1, name: "Table 1" }, { id: 2, name: "Table 2" }, { id: 3, name: "Table 3" }, { id: 4, name: "Table 4" }, { id: 5, name: "Table 5" }
+    ];
+    
+    function generateReceiptId() {
+        const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
+        const num = (receiptCounter++).toString().padStart(4, '0');
+        return `CUE-${dateStr}-${num}`;
+    }
+    
+    function computeRemainingMinutes(session) {
+        const now = new Date();
+        const elapsed = Math.floor((now - session.startDateTime) / 60000);
+        return Math.max(0, session.purchasedMinutes - elapsed);
+    }
+    
+    function recalcTimeCost(session) {
+        let total = session.gameCharges ? session.gameCharges.reduce((sum, g) => sum + g.price, 0) : 0;
+        if (session.chargedExtensions) total += session.chargedExtensions.reduce((s, ex) => s + ex.amount, 0);
+        session.totalTimeCost = total;
+        return total;
+    }
+    
+    function recalcFoodCost(session) {
+        let total = session.foodOrders ? session.foodOrders.reduce((s, item) => s + item.lineTotal, 0) : 0;
+        session.totalFoodCost = total;
+        return total;
+    }
+    
+    function getSubtotal(session) { return (session.totalTimeCost || 0) + (session.totalFoodCost || 0); }
+    function getDiscountAmount(session) {
+        const subtotal = getSubtotal(session);
+        const type = session.discountType || 'percent';
+        const value = session.discountValue || 0;
+        if (type === 'percent') return subtotal * (value / 100);
+        else return Math.min(value, subtotal);
+    }
+    function getSessionTotal(session) { return getSubtotal(session) - getDiscountAmount(session); }
+    
+    function applyDiscount(tableId, type, value) {
+        const session = activeSessions.get(tableId);
+        if (!session) return false;
+        let val = parseFloat(value);
+        if (isNaN(val)) val = 0;
+        if (type === 'percent') val = Math.min(100, Math.max(0, val));
+        else val = Math.max(0, val);
+        session.discountType = type;
+        session.discountValue = val;
+        saveToLocalStorage();
+        renderAll();
+        return true;
+    }
+    
+    function addAnotherGame(tableId, gameId) {
+        const session = activeSessions.get(tableId);
+        if (!session) return false;
+        const game = GAMES_CATALOG.find(g => g.id === gameId);
+        if (!game) return false;
+        session.gameCharges.push({ gameId: game.id, gameName: game.name, price: game.price, minutes: game.defaultMinutes, timestamp: new Date().toLocaleString() });
+        session.timeCharges.push({ type: "additional_game", game: game.name, minutes: game.defaultMinutes, amount: game.price, timestamp: new Date().toLocaleString() });
+        session.purchasedMinutes += game.defaultMinutes;
+        recalcTimeCost(session);
+        saveToLocalStorage();
+        renderAll();
+        return true;
+    }
+    
+    function startSession(tableId, customerName, phone, gameId, initialMinutes, basePrice) {
+        if (activeSessions.has(tableId)) return false;
+        const startTime = new Date();
+        const game = GAMES_CATALOG.find(g=>g.id===gameId);
+        const newSession = {
+            tableId, customerName: customerName.trim() || "Guest", phone: phone.trim() || "",
+            startDateTime: startTime, purchasedMinutes: initialMinutes,
+            gameCharges: [{ gameId: game.id, gameName: game.name, price: basePrice, minutes: initialMinutes, timestamp: startTime.toLocaleString() }],
+            timeCharges: [{ type: "base_game", game: game.name, minutes: initialMinutes, amount: basePrice, timestamp: startTime.toLocaleString() }],
+            chargedExtensions: [], freeExtensions: [], foodOrders: [],
+            totalTimeCost: basePrice, totalFoodCost: 0, discountType: 'percent', discountValue: 0
+        };
+        activeSessions.set(tableId, newSession);
+        saveToLocalStorage();
+        renderAll();
+        return true;
+    }
+    
+    function addTimeExtension(tableId, extraMinutes) {
+        const session = activeSessions.get(tableId);
+        if (!session) return false;
+        let totalCost = 0;
+        for (let gc of session.gameCharges) {
+            const game = GAMES_CATALOG.find(g => g.id === gc.gameId);
+            if (game && game.extensionChargeable) {
+                totalCost += (extraMinutes / game.defaultMinutes) * game.price;
+            }
+        }
+        if (totalCost > 0) {
+            session.chargedExtensions.push({ minutes: extraMinutes, amount: totalCost, timestamp: new Date().toLocaleString() });
+            session.timeCharges.push({ type: "extension", minutes: extraMinutes, amount: totalCost, timestamp: new Date().toLocaleString() });
+        } else {
+            session.freeExtensions.push({ minutes: extraMinutes, timestamp: new Date().toLocaleString() });
+            session.timeCharges.push({ type: "free_extension", minutes: extraMinutes, amount: 0, timestamp: new Date().toLocaleString() });
+        }
+        session.purchasedMinutes += extraMinutes;
+        recalcTimeCost(session);
+        saveToLocalStorage();
+        renderAll();
+        return true;
+    }
+    
+    function addFoodToSession(tableId, snackId, quantity) {
+        const session = activeSessions.get(tableId);
+        if (!session) return;
+        const snack = snacksCatalog.find(s => s.id === snackId);
+        if (!snack) return;
+        session.foodOrders.push({ id: Date.now()+Math.random(), itemId: snack.id, name: snack.name, price: snack.price, quantity, lineTotal: snack.price * quantity });
+        recalcFoodCost(session);
+        saveToLocalStorage();
+        renderAll();
+    }
+    
+    function removeFoodItem(tableId, idx) {
+        const session = activeSessions.get(tableId);
+        if (session) { session.foodOrders.splice(idx,1); recalcFoodCost(session); saveToLocalStorage(); renderAll(); }
+    }
+    
+    function printCurrentBill(tableId) {
+        const session = activeSessions.get(tableId);
+        if (session) printReceipt(buildReceiptObject(session, false, null));
+    }
+    
+    function closeSession(tableId) {
+        try {
+            const session = activeSessions.get(tableId);
+            if (!session) return;
+            const receiptId = generateReceiptId();
+            const receipt = buildReceiptObject(session, true, receiptId);
+            completedTransactions.unshift(receipt);
+            activeSessions.delete(tableId);
+            saveToLocalStorage();
+            renderAll();
+            printReceipt(receipt);
+        } catch(err) { alert("Error: "+err.message); }
+    }
+    
+    function buildReceiptObject(session, isFinal, receiptId) {
+        const subtotal = getSubtotal(session);
+        const discountType = session.discountType || 'percent';
+        const discountValue = session.discountValue || 0;
+        const discountAmount = getDiscountAmount(session);
+        const total = getSessionTotal(session);
+        const finalId = receiptId || (isFinal ? generateReceiptId() : "TEMP-"+Date.now());
+        const gameList = session.gameCharges.map(gc => `${gc.gameName} (${gc.price} PKR)`).join(", ");
+        return {
+            receiptId: finalId, transactionId: finalId, tableName: tables.find(t=>t.id===session.tableId).name,
+            customer: session.customerName, phone: session.phone || "", dateClosed: new Date().toISOString(),
+            games: gameList, basePrice: session.gameCharges.reduce((sum,g)=>sum+g.price,0),
+            chargedExtensions: session.chargedExtensions || [], freeExtensions: session.freeExtensions || [],
+            foodOrders: [...session.foodOrders], subtotal, discountType, discountValue, discountAmount, total,
+            note: isFinal ? "FINAL BILL" : "CURRENT BILL", currency: "PKR"
+        };
+    }
+    
+    function printReceipt(receipt) {
+        const formatMoney = (amt) => `₨ ${amt.toFixed(2)}`;
+        const displayDate = new Date(receipt.dateClosed).toLocaleString();
+        let discountLine = '';
+        if (receipt.discountAmount > 0) {
+            discountLine = receipt.discountType === 'percent' ? `<div>Discount (${receipt.discountValue}%): -${formatMoney(receipt.discountAmount)}</div>` : `<div>Discount (Fixed ₨ ${receipt.discountValue}): -${formatMoney(receipt.discountAmount)}</div>`;
+        }
+        const html = `<div class="print-receipt-only" style="font-family: monospace; padding:20px; max-width:350px; margin:0 auto;">
+            <h3 style="text-align:center;">🎱 CUE CORNER</h3>
+            <p style="text-align:center;">${receipt.tableName} | ${displayDate}</p>
+            <p>Receipt #: ${receipt.receiptId}</p>
+            <p>Customer: ${receipt.customer} ${receipt.phone ? `(${receipt.phone})` : ''}</p>
+            <p>Games: ${receipt.games}</p><hr/>
+            <div>Total games: ${formatMoney(receipt.basePrice)}</div>
+            ${receipt.chargedExtensions.length ? `<div><strong>Paid Extensions:</strong>${receipt.chargedExtensions.map(ex=>`<br> +${ex.minutes}min → ${formatMoney(ex.amount)}`).join('')}</div>` : ''}
+            ${receipt.freeExtensions.length ? `<div><strong>Free Extensions:</strong> +${receipt.freeExtensions.reduce((s,ex)=>s+ex.minutes,0)} min</div>` : ''}
+            <h4>🍽️ Food</h4>${receipt.foodOrders.length ? receipt.foodOrders.map(f=>`<div>${f.name} x${f.quantity} → ${formatMoney(f.lineTotal)}</div>`).join('') : '<div>- None -</div>'}
+            <hr/><div>Subtotal: ${formatMoney(receipt.subtotal)}</div>${discountLine}
+            <div style="font-size:1.3rem; font-weight:bold;">TOTAL: ${formatMoney(receipt.total)}</div>
+            <p style="margin-top:20px; text-align:center;">Thank you!</p></div>`;
+        try {
+            const win = window.open('', '_blank', 'width=450,height=700');
+            if (!win) { alert("Allow pop-ups to print."); return; }
+            win.document.write(`<html><head><title>Receipt ${receipt.receiptId}</title></head><body>${html}</body></html>`);
+            win.document.close();
+            win.print();
+        } catch(e) { alert("Print failed but bill closed."); }
+    }
+    
+    function getTodayTransactions() {
+        const today = new Date().toISOString().slice(0,10);
+        return completedTransactions.filter(t => t.dateClosed.slice(0,10) === today);
+    }
+    function getTodayRevenue() { return getTodayTransactions().reduce((s,t)=>s+t.total,0); }
+    function getPendingRevenue() { let p=0; for(let s of activeSessions.values()) p+=getSessionTotal(s); return p; }
+    
+    function exportToCSV(transactions, filename) {
+        if(!transactions.length){alert("No data");return;}
+        const headers=["Receipt ID","Date/Time","Table","Customer","Phone","Games","Subtotal","Discount Type","Discount Value","Discount Amount","Total","Details"];
+        const rows=[headers];
+        for(let tx of transactions){
+            const dt=new Date(tx.dateClosed).toLocaleString();
+            const items=[...tx.foodOrders.map(f=>`${f.name}x${f.quantity}`), ...tx.chargedExtensions.map(e=>`Ext:+${e.minutes}min`)]; 
+            rows.push([tx.receiptId,dt,tx.tableName,tx.customer,tx.phone,tx.games,tx.subtotal.toFixed(2),
+                tx.discountType==='percent'?`% ${tx.discountValue}`:`Fixed ${tx.discountValue}`,
+                tx.discountValue,tx.discountAmount.toFixed(2),tx.total.toFixed(2),items.join("; ")]);
+        }
+        const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+        const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+        const link=document.createElement("a");
+        link.href=URL.createObjectURL(blob);
+        link.download=filename;
+        link.click();
+        URL.revokeObjectURL(blob);
+    }
+    function exportDaily(){exportToCSV(getTodayTransactions(),`Daily_${new Date().toISOString().slice(0,10)}.csv`);}
+    function exportAll(){exportToCSV(completedTransactions,`All_${new Date().toISOString().slice(0,10)}.csv`);}
+    function resetRevenue(){if(confirm("Reset all closed bills?")){completedTransactions=[]; receiptCounter=1; saveToLocalStorage(); renderAll(); alert("Reset done.");}}
+    function toggleRevenueVisibility(){revenueHidden=!revenueHidden; document.getElementById('financeStats').classList.toggle('hidden',revenueHidden); const btn=document.getElementById('toggleRevenueBtn'); btn.innerHTML=revenueHidden?'<i class="fas fa-eye"></i> Show':'<i class="fas fa-eye-slash"></i> Hide'; saveToLocalStorage();}
+    
+    function openGameEditor(){
+        let html=`<h3>Edit / Add Games</h3><div id="gamesEditList">`;
+        GAMES_CATALOG.forEach((g,i)=>{
+            html+=`<div class="game-edit-row"><span style="width:120px;">${g.name}</span>
+            <input type="number" id="price_${i}" value="${g.price}" step="10" style="width:80px;">
+            <input type="number" id="mins_${i}" value="${g.defaultMinutes}" step="5" style="width:70px;">
+            <label><input type="checkbox" id="charge_${i}" ${g.extensionChargeable?'checked':''}> Charge</label>
+            <button class="btn-sm update-game-btn" data-idx="${i}">Save</button></div>`;
+        });
+        html+=`</div><hr/><h4>Add New Game</h4><div><input type="text" id="newGameName" placeholder="Name" style="width:60%"><input type="number" id="newGamePrice" placeholder="Price" step="10" style="width:35%"></div>
+        <div><input type="number" id="newGameMinutes" placeholder="Minutes" step="5" style="width:60%"><label><input type="checkbox" id="newGameChargeable"> Charge Ext</label></div>
+        <button id="addNewGameBtn" class="btn-sm">+ Add Game</button><div class="modal-buttons"><button id="modalCancel">Close</button></div>`;
+        showModal(html,null,null);
+        setTimeout(()=>{
+            document.querySelectorAll('.update-game-btn').forEach(btn=>btn.addEventListener('click',()=>{
+                const idx=parseInt(btn.dataset.idx);
+                const p=parseFloat(document.getElementById(`price_${idx}`).value);
+                const m=parseInt(document.getElementById(`mins_${idx}`).value);
+                const ch=document.getElementById(`charge_${idx}`).checked;
+                if(!isNaN(p)&&p>=0&&!isNaN(m)&&m>0){ GAMES_CATALOG[idx].price=p; GAMES_CATALOG[idx].defaultMinutes=m; GAMES_CATALOG[idx].extensionChargeable=ch; saveToLocalStorage(); alert("Updated"); openGameEditor();}
+                else alert("Invalid");
+            }));
+            const addBtn=document.getElementById('addNewGameBtn');
+            if(addBtn) addBtn.addEventListener('click',()=>{
+                const name=document.getElementById('newGameName').value.trim();
+                const price=parseFloat(document.getElementById('newGamePrice').value);
+                const mins=parseInt(document.getElementById('newGameMinutes').value);
+                const charge=document.getElementById('newGameChargeable').checked;
+                if(!name||isNaN(price)||price<=0||isNaN(mins)||mins<=0){alert("Valid name, price, minutes");return;}
+                GAMES_CATALOG.push({id:"game"+Date.now(), name, price, defaultMinutes:mins, extensionChargeable:charge});
+                saveToLocalStorage(); alert(`Added ${name}`); openGameEditor();
+            });
+        },10);
+    }
+    
+    function openSnackManager(){
+        let html=`<h3>Manage Snacks</h3><div>`;
+        snacksCatalog.forEach((s,i)=>{html+=`<div class="food-item-row">${s.name} - ₨${s.price} <button class="btn-sm removeSnackBtn" data-idx="${i}">Delete</button></div>`;});
+        html+=`</div><hr/><div><input type="text" id="newSnackName" placeholder="Name"><input type="number" id="newSnackPrice" placeholder="Price"><button id="addSnackBtn">+ Add</button></div>
+        <div class="modal-buttons"><button id="modalCancel">Close</button></div>`;
+        showModal(html,null,null);
+        setTimeout(()=>{
+            document.querySelectorAll('.removeSnackBtn').forEach(btn=>btn.addEventListener('click',()=>{snacksCatalog.splice(parseInt(btn.dataset.idx),1); saveToLocalStorage(); openSnackManager();}));
+            document.getElementById('addSnackBtn')?.addEventListener('click',()=>{
+                let name=document.getElementById('newSnackName').value.trim();
+                let price=parseFloat(document.getElementById('newSnackPrice').value);
+                if(name&&price>0){snacksCatalog.push({id:"s"+Date.now(),name,price}); saveToLocalStorage(); openSnackManager();}
+                else alert("Valid name & price");
+            });
+        },10);
+    }
+    
+    function formatPKR(amt){return `₨ ${amt.toFixed(2)}`;}
+    
+    function renderTables(){
+        const grid=document.getElementById('tablesGrid');
+        grid.innerHTML='';
+        for(let table of tables){
+            const s=activeSessions.get(table.id);
+            const occ=!!s;
+            let rem=0,cust='',phone='',games='',sub=0,tot=0,dis='',timeup=false;
+            if(occ){
+                rem=computeRemainingMinutes(s); timeup=(rem===0);
+                cust=s.customerName; phone=s.phone?` (${s.phone})`:''; games=s.gameCharges.map(g=>g.gameName).join(", ");
+                sub=getSubtotal(s); tot=getSessionTotal(s);
+                const damt=getDiscountAmount(s);
+                if(damt>0) dis=(s.discountType==='percent'?`Discount ${s.discountValue}%: -${formatPKR(damt)}`:`Discount (₨${s.discountValue}): -${formatPKR(damt)}`);
+            }
+            const statusClass=occ?"status-occupied":"status-available";
+            let statusText=occ?(timeup?`⏰ TIME UP!`:`🎯 ${cust}${phone} · ${rem}min left`):"⚡ AVAILABLE";
+            const card=document.createElement('div');card.className='table-card';
+            card.innerHTML=`
+                <div class="table-header"><span>${table.name}</span><span class="table-status ${statusClass}">${statusText}</span></div>
+                <div class="table-body">
+                    ${occ?`
+                        <div class="info-row"><span>Started:</span><span>${s.startDateTime.toLocaleTimeString()}</span></div>
+                        <div class="info-row"><span>Time left:</span><span class="badge-time">${rem} min</span></div>
+                        <div class="info-row"><span>Games:</span><span>${games}</span></div>
+                        <div class="info-row"><span>Time charges:</span><span>${formatPKR(s.totalTimeCost)}</span></div>
+                        <div class="info-row"><span>Food:</span><span>${formatPKR(s.totalFoodCost)}</span></div>
+                        ${dis?`<div class="info-row">${dis}</div>`:''}
+                        <div class="bill-total">TOTAL: ${formatPKR(tot)}</div>
+                        <div class="btn-group">
+                            <button class="btn-sm extend-time" data-table="${table.id}"><i class="fas fa-plus-circle"></i> Extend</button>
+                            <button class="btn-sm add-game" data-table="${table.id}"><i class="fas fa-plus-square"></i> Add Game</button>
+                            <button class="btn-sm add-food" data-table="${table.id}"><i class="fas fa-pizza-slice"></i> Snack</button>
+                            <button class="btn-sm view-orders" data-table="${table.id}"><i class="fas fa-list-ul"></i> Orders</button>
+                            <button class="btn-sm btn-print print-bill" data-table="${table.id}"><i class="fas fa-print"></i> Print</button>
+                            <button class="btn-sm btn-discount discount-btn" data-table="${table.id}"><i class="fas fa-percent"></i> Disc</button>
+                            <button class="btn-sm btn-danger close-table" data-table="${table.id}"><i class="fas fa-flag-checkered"></i> Close</button>
+                        </div>
+                    `:`<button class="start-game" data-table="${table.id}" style="width:100%;"><i class="fas fa-play"></i> Start Game</button>`}
+                </div>`;
+            grid.appendChild(card);
+        }
+    }
+    
+    function setupEventDelegation(){
+        const grid=document.getElementById('tablesGrid');
+        grid.addEventListener('click',(e)=>{
+            const btn=e.target.closest('button'); if(!btn) return;
+            const tid=parseInt(btn.dataset.table); if(isNaN(tid)) return;
+            if(btn.classList.contains('start-game')) openGameModal(tid);
+            else if(btn.classList.contains('extend-time')) openExtendModal(tid);
+            else if(btn.classList.contains('add-game')) openAddGameModal(tid);
+            else if(btn.classList.contains('add-food')) openFoodModal(tid);
+            else if(btn.classList.contains('view-orders')) openOrderDetails(tid);
+            else if(btn.classList.contains('print-bill')) printCurrentBill(tid);
+            else if(btn.classList.contains('discount-btn')) openDiscountModal(tid);
+            else if(btn.classList.contains('close-table')){if(confirm("Close & print?")) closeSession(tid);}
+        });
+    }
+    
+    function openGameModal(tid){
+        let opts=''; GAMES_CATALOG.forEach(g=>{opts+=`<option value="${g.id}">${g.name} - ${g.defaultMinutes}min - ${formatPKR(g.price)}</option>`;});
+        const html=`<h3>Start Game</h3><label>Name:</label><input type="text" id="custName" value="Player"><label>Phone:</label><input type="tel" id="custPhone"><label>Game:</label><select id="gameSelect">${opts}</select>
+        <div class="modal-buttons"><button id="modalCancel">Cancel</button><button id="modalConfirm">Start</button></div>`;
+        showModal(html,()=>{
+            const name=document.getElementById('custName').value;
+            const phone=document.getElementById('custPhone').value;
+            const gid=document.getElementById('gameSelect').value;
+            const game=GAMES_CATALOG.find(g=>g.id===gid);
+            if(game) startSession(tid,name,phone,gid,game.defaultMinutes,game.price);
+        });
+    }
+    function openAddGameModal(tid){
+        let opts=''; GAMES_CATALOG.forEach(g=>{opts+=`<option value="${g.id}">${g.name} - ${g.defaultMinutes}min - ${formatPKR(g.price)}</option>`;});
+        const html=`<h3>Add Another Game</h3><select id="gameSelect">${opts}</select><div class="modal-buttons"><button id="modalCancel">Cancel</button><button id="modalConfirm">Add</button></div>`;
+        showModal(html,()=>{addAnotherGame(tid,document.getElementById('gameSelect').value);});
+    }
+    function openExtendModal(tid){
+        const s=activeSessions.get(tid); if(!s) return;
+        const hasCharge=s.gameCharges.some(gc=>{const g=GAMES_CATALOG.find(gx=>gx.id===gc.gameId); return g&&g.extensionChargeable;});
+        const html=`<h3>Extend Time</h3><p>${hasCharge?"Paid extension":"Free"}</p><select id="extraMins"><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select>
+        <div class="modal-buttons"><button id="modalCancel">Cancel</button><button id="modalConfirm">Add</button></div>`;
+        showModal(html,()=>{addTimeExtension(tid,parseInt(document.getElementById('extraMins').value));});
+    }
+    function openFoodModal(tid){
+        let items=`<h3>Add Snack</h3>`;
+        snacksCatalog.forEach(sn=>{items+=`<div class="food-item-row"><span>${sn.name} - ${formatPKR(sn.price)}</span><div><input type="number" id="qty_${sn.id}" value="1" min="1" style="width:60px;"><button class="btn-sm addSnackBtn" data-id="${sn.id}">Add</button></div></div>`;});
+        items+=`<hr/><button id="modalCancel">Close</button>`;
+        showModal(items,null,null);
+        setTimeout(()=>{
+            document.querySelectorAll('.addSnackBtn').forEach(btn=>btn.addEventListener('click',()=>{
+                const sid=btn.dataset.id;
+                const qty=parseInt(document.getElementById(`qty_${sid}`).value)||1;
+                addFoodToSession(tid,sid,qty);
+                document.getElementById('genericModal').classList.remove('active');
+            }));
+        },10);
+    }
+    function openOrderDetails(tid){
+        const s=activeSessions.get(tid); if(!s) return;
+        let html=`<h3>Order Details</h3><ul>${s.timeCharges.map(c=>`<li>${c.type}: ${c.minutes}min → ${c.amount>0?formatPKR(c.amount):'Free'}</li>`).join('')}</ul><strong>Food:</strong><ul>`;
+        s.foodOrders.forEach((it,idx)=>{html+=`<li>${it.name} x${it.quantity} = ${formatPKR(it.lineTotal)} <button class="btn-sm remove-food-item" data-index="${idx}">Remove</button></li>`;});
+        html+=`</ul><div class="bill-total">Total: ${formatPKR(getSessionTotal(s))}</div><button id="modalCancel">Close</button>`;
+        showModal(html,null,null);
+        setTimeout(()=>{
+            document.querySelectorAll('.remove-food-item').forEach(btn=>btn.addEventListener('click',()=>{removeFoodItem(tid,parseInt(btn.dataset.index)); openOrderDetails(tid);}));
+        },20);
+    }
+    function openDiscountModal(tid){
+        const s=activeSessions.get(tid);
+        const curType=s?.discountType||'percent';
+        const curVal=s?.discountValue||0;
+        const html=`<h3>Discount</h3><div class="discount-type-group"><label><input type="radio" name="dtype" value="percent" ${curType==='percent'?'checked':''}> %</label><label><input type="radio" name="dtype" value="fixed" ${curType==='fixed'?'checked':''}> ₨ Fixed</label></div>
+        <label>Value:</label><input type="number" id="discountVal" step="${curType==='percent'?1:10}" value="${curVal}"><div class="modal-buttons"><button id="modalCancel">Cancel</button><button id="modalConfirm">Apply</button></div>`;
+        showModal(html,()=>{
+            const type=document.querySelector('input[name="dtype"]:checked').value;
+            let val=parseFloat(document.getElementById('discountVal').value);
+            if(isNaN(val)) val=0;
+            if(type==='percent') val=Math.min(100,Math.max(0,val));
+            else val=Math.max(0,val);
+            applyDiscount(tid,type,val);
+        });
+    }
+    
+    function showModal(html,onConfirm,onCancel){
+        const modal=document.getElementById('genericModal');
+        const cont=document.getElementById('modalContentDynamic');
+        cont.innerHTML=html;
+        modal.classList.add('active');
+        const confirmBtn=cont.querySelector('#modalConfirm');
+        const cancelBtn=cont.querySelector('#modalCancel');
+        const close=()=>modal.classList.remove('active');
+        if(confirmBtn) confirmBtn.addEventListener('click',()=>{if(onConfirm) onConfirm(); close();});
+        if(cancelBtn) cancelBtn.addEventListener('click',close);
+        modal.addEventListener('click',(e)=>{if(e.target===modal) close();});
+    }
+    
+    function saveToLocalStorage(){
+        const data={snacksCatalog, completedTransactions, GAMES_CATALOG, receiptCounter, revenueHidden,
+            activeSessionsData:Array.from(activeSessions.entries()).map(([id,s])=>({tableId:id, session:{...s, startDateTime:s.startDateTime.toISOString()}}))};
+        localStorage.setItem('CueCornerMobile',JSON.stringify(data));
+    }
+    function loadFromLocalStorage(){
+        const raw=localStorage.getItem('CueCornerMobile');
+        if(raw){
+            try{
+                const data=JSON.parse(raw);
+                snacksCatalog=data.snacksCatalog??snacksCatalog;
+                completedTransactions=data.completedTransactions??[];
+                receiptCounter=data.receiptCounter??1;
+                revenueHidden=data.revenueHidden??false;
+                if(data.GAMES_CATALOG) GAMES_CATALOG=data.GAMES_CATALOG;
+                if(data.activeSessionsData){
+                    const nm=new Map();
+                    data.activeSessionsData.forEach(({tableId,session})=>{
+                        const rec={...session, startDateTime:new Date(session.startDateTime)};
+                        if(!rec.discountType) rec.discountType='percent';
+                        if(!rec.gameCharges && rec.baseGamePrice){
+                            rec.gameCharges=[{gameId:rec.gameId, gameName:rec.gameName, price:rec.baseGamePrice, minutes:rec.purchasedMinutes, timestamp:rec.startDateTime.toLocaleString()}];
+                        }
+                        nm.set(tableId,rec);
+                    });
+                    activeSessions=nm;
+                }
+            }catch(e){}
+        }
+        renderAll();
+    }
+    function renderAll(){renderTables(); document.getElementById('todayRevenue').innerText=formatPKR(getTodayRevenue()); document.getElementById('pendingRevenue').innerText=formatPKR(getPendingRevenue()); document.getElementById('financeStats').classList.toggle('hidden',revenueHidden);}
+    
+    // Wait for unlock before initializing app? Actually unlock hides overlay, but we can load data regardless.
+    // But to prevent any interference, we'll set a small interval to check if unlocked, then initialize.
+    // However the main content is hidden behind overlay; user cannot interact until unlocked. Data loads fine.
+    // We'll attach event listeners after DOM ready. But the unlock function just hides overlay.
+    // All event listeners are already attached via script at bottom.
+    // We'll ensure that loadFromLocalStorage runs after DOM ready.
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize only after the DOM is ready, but the overlay still there.
+        loadFromLocalStorage();
+        setupEventDelegation();
+        setInterval(()=>{if(activeSessions.size) renderAll();},30000);
+        // Attach main buttons
+        document.getElementById('manageGamesBtn').addEventListener('click',openGameEditor);
+        document.getElementById('manageSnacksBtn').addEventListener('click',openSnackManager);
+        document.getElementById('exportDailyBtn').addEventListener('click',exportDaily);
+        document.getElementById('exportAllBtn').addEventListener('click',exportAll);
+        document.getElementById('resetRevenueBtn').addEventListener('click',resetRevenue);
+        document.getElementById('toggleRevenueBtn').addEventListener('click',toggleRevenueVisibility);
+    });
+</script>
+</body>
+</html>
