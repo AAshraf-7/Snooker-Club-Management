@@ -3,7 +3,7 @@
 A complete, mobile‑friendly web app for managing a snooker/pool club.  
 Supports **5 tables**, **game‑based pricing**, **snacks ordering**, **discounts (percentage or fixed)**, **unique receipt IDs**, **customer phone numbers**, **time extensions** (free for most games, charged for Century), **printable receipts**, **daily/all‑time Excel exports**, and a **password lock**.
 
-🔒 **Password:** `WorkingToBetterMyself`
+🔒 **Password:** `CodingToBetterMyself`
 
 ---
 
